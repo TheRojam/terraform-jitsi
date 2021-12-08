@@ -1,0 +1,28 @@
+#cloud-config
+packages:
+  - ansible
+  - certbot
+write_files:
+  - content: |
+      - hosts: ${jitsi_sub_domain}
+        roles:
+          - { role: systemli.letsencrypt }
+          - { role: systemli.jitsi_meet }
+        vars:
+          jitsi_meet_server_name: "${fqdn}"
+          jitsi_meet_ssl_cert_path: "/etc/letsencrypt/live/{{ jitsi_meet_server_name }}/fullchain.pem"
+          jitsi_meet_ssl_key_path: "/etc/letsencrypt/live/{{ jitsi_meet_server_name }}/privkey.pem"
+          jitsi_meet_config_default_language: ${jitsi_default_language}
+          jitsi_meet_base_secret: "${random_password}"
+          letsencrypt_account_email: ${letsencrypt_account_email}
+          letsencrypt_cert:
+            name: "{{ jitsi_meet_server_name }}"
+            domains:
+              - "{{ jitsi_meet_server_name }}"
+            challenge: http
+            http_auth: standalone
+    path: /root/jitsi-server.yml
+runcmd:
+  - [ ansible-galaxy, install, systemli.letsencrypt ]
+  - [ ansible-galaxy, install, systemli.jitsi_meet ]
+  - ansible-playbook --connection=local --inventory ${jitsi_sub_domain}, /root/jitsi-server.yml
