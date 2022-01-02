@@ -24,7 +24,9 @@ data "template_file" "user_data" {
   }
 }
 
-
+#
+#
+#
 resource "hcloud_server" "server" {
   name        = "${var.jitsi_sub_domain}.${var.domain_name}" 
   image       = var.server.image
@@ -35,3 +37,28 @@ resource "hcloud_server" "server" {
   user_data   = data.template_file.user_data.rendered
 }
 
+data "hcloud_server" "server"{
+  name     = "${var.jitsi_sub_domain}.${var.domain_name}"
+  depends_on = [hcloud_server.server]
+}
+
+resource "inwx_record" "domain2ipv4" {
+  domain   = var.domain_name
+  name     = var.jitsi_sub_domain
+  type     = "A"
+  value    = data.hcloud_server.server.ipv4_address 
+  ttl      = 360
+  priority = 10
+  depends_on = [hcloud_server.server]
+
+}
+resource "inwx_record" "domain2ipv6" {
+  domain   = var.domain_name
+  name     = var.jitsi_sub_domain
+  type     = "AAAA"
+  value    = data.hcloud_server.server.ipv6_address 
+  ttl      = 360
+  priority = 10
+  depends_on = [hcloud_server.server]
+
+}

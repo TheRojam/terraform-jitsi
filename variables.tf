@@ -3,6 +3,16 @@ variable hcloud_token {
  description = "user provided hcloud api token"
 }
 
+variable inwx_username {
+ type = string
+ description = "user provided inwx username"
+}
+
+variable inwx_password {
+ type = string
+ description = "user provided inwx password"
+}
+
 variable "ssh_key_id" {
   type 	= string
   description = "antons ssh_key on hetzner"
@@ -28,7 +38,7 @@ variable "server" {
  variable "domain_name" {
    type = string
    description = "The name of the DNS zone at Hetzener DNS to create DNS records for the server."
-   default = "therojam.cloud"
+   default = "antonmueller.xyz"
  }
 
 variable "jitsi_sub_domain" {
@@ -63,7 +73,7 @@ variable "letsencrypt_account_email" {
 #
 variable "jitsi_default_language" {
   type = string
-  default = "en"
+  default = "de"
   description = "Default language of jitsi meet."
 }
 
